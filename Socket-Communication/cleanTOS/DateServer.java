@@ -6,7 +6,7 @@ public class DateServer extends Thread
   public void run() {
 	try {
 
-	  ServerSocket sock = new ServerSocket(6008);
+	  ServerSocket sock = new ServerSocket(6009);
 	  SysLib.cout("Listening on port: "+ sock.getLocalPort());
 
 	  /* now listen for connections */
@@ -21,7 +21,9 @@ public class DateServer extends Thread
 		/* close the socket and resume */
 		/* listening for connections */
 		client.close();
+
 	  }
+	  //SysLib.exit( );
 	}
 	catch (IOException ioe) {
 		System.err.println(ioe);

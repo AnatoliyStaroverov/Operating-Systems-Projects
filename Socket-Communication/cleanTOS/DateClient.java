@@ -10,7 +10,7 @@ public class DateClient extends Thread
   public void run() {
     try {
       /* make connection to server socket */
-      Socket sock = new Socket("127.0.0.1",6008);
+      Socket sock = new Socket("127.0.0.1",6009);
       SysLib.cout("Client Connected..\n");
      
 
@@ -25,6 +25,7 @@ public class DateClient extends Thread
 
       /* close the socket connection*/
       sock.close();
+      SysLib.exit( );
     }
     catch (IOException ioe) {
       System.err.println(ioe);
