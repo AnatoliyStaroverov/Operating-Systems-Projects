@@ -1,16 +1,20 @@
 import java.net.*;
 import java.io.*;
 
-public class DateServer
+public class DateServer extends Thread
 {
   public static void main(String[] args) {
 	try {
-	  ServerSocket sock = new ServerSocket(6013);
+
+	  ServerSocket sock = new ServerSocket(0);
+
 	  /* now listen for connections */
 	  while (true) {
+		  
 		Socket client = sock.accept();
 		PrintWriter pout = new
 		  PrintWriter(client.getOutputStream(), true);
+
 		/* write the Date to the socket */
 		pout.println(new java.util.Date().toString());
 		/* close the socket and resume */
@@ -19,7 +23,7 @@ public class DateServer
 	  }
 	}
 	catch (IOException ioe) {
-	  System.err.println(ioe);
+		System.err.println(ioe);
 	}
   }
 }
