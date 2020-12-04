@@ -10,6 +10,16 @@ public class CmdClient extends Thread
   private String hostName;
   private int port;
 
+  // Validation function to enforce Tcp ports from 5000-5500.
+  boolean isPortValid(int Port){
+    if(Port >= 5000 || Port <= 5500){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
   /**
     Constructor to set user inputed port 
     and hostname.If hostname isnt provided 
@@ -21,15 +31,20 @@ public class CmdClient extends Thread
     if(args.length <2){
       SysLib.cout("No Hostname was provided. Default to local host.");
       hostName = "127.0.0.1";
-      port = Integer.parseInt(args[0]);
-    }
 
+        // Port validator
+        if(isPortValid(args[0]){
+          port = Integer.parseInt(args[0]);
+        }
+        else{
+          SysLib.cout("Port out of bounds... \n\n");
+        }
+    }
     // Connect to remote host.
     else{
     hostName = args[0];
     port = Integer.parseInt(args[1]);
     }
-    
   }
   
   public void run() {
@@ -38,7 +53,6 @@ public class CmdClient extends Thread
       /* make connection to server socket */
       Socket sock = new Socket(hostName,port);
       SysLib.cout("Client Connected on : " + hostName +"\n");
-
 
       InputStream in = sock.getInputStream();
       BufferedReader bin = new
@@ -58,11 +72,8 @@ public class CmdClient extends Thread
     }
   }
 
-
+  // Start CmdClient here 
   public static void main(String args[]) {
-
-// args[0],Integer.parseInt(args[1])
     new CmdClient(args).start();
-   
   }
 }
