@@ -6,10 +6,12 @@ import java.util.*;
 // use cp to copy file contents 
 public class DateClient extends Thread
 {
-  public static void main(String[] args) {
+  
+  public void run() {
     try {
       /* make connection to server socket */
-      Socket sock = new Socket("127.0.0.1",6013);
+      Socket sock = new Socket("127.0.0.1",6008);
+      SysLib.cout("Client Connected..\n");
      
 
       InputStream in = sock.getInputStream();

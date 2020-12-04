@@ -3,10 +3,11 @@ import java.io.*;
 
 public class DateServer extends Thread
 {
-  public static void main(String[] args) {
+  public void run() {
 	try {
 
-	  ServerSocket sock = new ServerSocket(0);
+	  ServerSocket sock = new ServerSocket(6008);
+	  SysLib.cout("Listening on port: "+ sock.getLocalPort());
 
 	  /* now listen for connections */
 	  while (true) {
