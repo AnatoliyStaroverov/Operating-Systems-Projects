@@ -24,6 +24,7 @@ public class DateClient extends Thread
         SysLib.cout(line);
 
       /* close the socket connection*/
+     
       sock.close();
       SysLib.exit( );
     }

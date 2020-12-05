@@ -7,8 +7,11 @@ public class CmdServer extends Thread{
 
 ServerSocket sock;
 Socket client;
-PrintWriter out;
+PrintWriter pout;
 BufferedReader in;
+
+String clientMessage = "empty";
+String revClientMessage = "rev";
 
 // Function to see if port is avaliable.
 public static boolean isTcpAvailable(int port){
@@ -23,12 +26,13 @@ public static boolean isTcpAvailable(int port){
 	return portAvalability;
 }
 // Function to return reverse message from client 
-String ReverseMessage(String message){
+void ReverseMessage(){
 	StringBuilder input = new StringBuilder();
-	input.append(message);
+	input.append(clientMessage);
 	input = input.reverse();
 	String ReverseStringMessage = input.toString();
-	return ReverseStringMessage;
+	revClientMessage = ReverseStringMessage;
+	SysLib.cout("(Server) Reversed string: "+ revClientMessage + "\n");
 }
 // Set up server port
 void setUpServer(){
@@ -49,7 +53,7 @@ void setUpServer(){
 void connectToClientServer(){
 	try{
 		client = sock.accept();
-		out = new PrintWriter(client.getOutputStream(),true);
+		pout = new PrintWriter(client.getOutputStream(),true);
         in = new BufferedReader(
 			 new InputStreamReader(client.getInputStream()));
 
@@ -60,20 +64,25 @@ void connectToClientServer(){
 // Display message from Client
 void DisplayClientMessage(){
 	try{
-	  //String message = in.readLine();
-	  //out.println(message);
-	  //SysLib.cout(message);
 	  String line;
-      while ( (line = in.readLine()) != null)
+      while ( (line = in.readLine()) != null){
         SysLib.cout("(Server) " + line + "\n");
+		clientMessage = line;
+	  }
+		
       
-
 	}catch(IOException e){
 		SysLib.cout("Error in Server setup: " + e);
 	}
 
 }
 
+// Write Message back to client 
+void SendMessage(){
+	
+		//out.println(revClientMessage);
+		//pout.flush();
+}
 
   public void run() {
 	try {
@@ -83,12 +92,26 @@ void DisplayClientMessage(){
 		connectToClientServer();
 
 		DisplayClientMessage();
+		SysLib.cout("(Server) Reversed string: "+ revClientMessage + "\n");
 
+		ReverseMessage();
+
+		//SendMessage();
+		pout.println(revClientMessage);
+		pout.flush();
+		
+	
+		pout.close();
+        in.close();
 		client.close();
 		SysLib.exit();
 	}
 	catch (IOException ioe) {
 		System.err.println(ioe);
 	}
+  }
+  // Start CmdClient here 
+  public static void main(String args[]) {
+    new CmdServer().start();
   }
 }

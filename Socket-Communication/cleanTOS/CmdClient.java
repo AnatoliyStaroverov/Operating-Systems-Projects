@@ -45,6 +45,7 @@ public class CmdClient extends Thread
        do{
          fromClient = stdIn.readLine();
          out.println(fromClient);
+         out.flush();
 
        }
        while(!fromClient.equals("bye"));
@@ -95,17 +96,15 @@ public class CmdClient extends Thread
       String fromServer;
     
       
-        try{
+        
           if((fromServer = in.readLine()) != null ){
            SysLib.cout("Client: (from server) "+fromServer + "\n");
            }
             // User input option.
             
-        }
-        catch(IOException e){
-          System.out.println("message execption: " + e);
-        }
-
+      
+      out.close();
+      in.close();
      sock.close();
      SysLib.exit( );
       
