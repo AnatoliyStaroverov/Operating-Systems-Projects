@@ -10,6 +10,11 @@ public class CmdClient extends Thread
   private String hostName;
   private int port;
 
+  DataInputStream input_message = null;
+  DataOutputStream output_mesage = null;
+  Socket sock = null;
+
+
   // Validation function to enforce Tcp ports from 5000-5500.
   boolean isPortValid(int Port){
     if(Port >= 5000 || Port <= 5500){
@@ -32,8 +37,9 @@ public class CmdClient extends Thread
       SysLib.cout("No Hostname was provided. Default to local host.");
       hostName = "127.0.0.1";
 
+        int temp_port = Integer.parseInt(args[0]);
         // Port validator
-        if(isPortValid(args[0]){
+        if(isPortValid(temp_port)){
           port = Integer.parseInt(args[0]);
         }
         else{
@@ -51,25 +57,44 @@ public class CmdClient extends Thread
     try {
       
       /* make connection to server socket */
-      Socket sock = new Socket(hostName,port);
+     sock = new Socket(hostName,port);
       SysLib.cout("Client Connected on : " + hostName +"\n");
 
-      InputStream in = sock.getInputStream();
-      BufferedReader bin = new
-      BufferedReader(new InputStreamReader(in));
+       input_message = new DataInputStream(System.in);
+       output_mesage = new DataOutputStream(sock.getOutputStream());
 
-      /* read the date from the socket */
-      String line;
-      while ( (line = bin.readLine()) != null)
-        SysLib.cout(line);
+     }
+     // Execption for unknow host. 
+       catch(UnknownHostException u){
+      System.err.println(u);
+      }
+       catch(IOException e){
+       System.err.println(e);
+       }
 
-      /* close the socket connection*/
-      sock.close();
-      SysLib.exit( );
-    }
-    catch (IOException ioe) {
-      System.err.println(ioe);
-    }
+
+      String user_input = "";
+      while(!user_input.equals("bye") || !user_input.equals("die") ){
+        try{
+          user_input = input_message.readLine();
+          output_mesage.writeUTF(user_input);
+         }
+        catch(IOException i){
+          System.out.println(i);
+         }
+       }
+
+      try{
+       /* close the socket connection*/
+       input_message.close();
+       output_mesage.close();
+       sock.close();
+       SysLib.exit( );
+       }
+      catch(IOException e){
+       //System.err.println(e);
+       }
+    
   }
 
   // Start CmdClient here 

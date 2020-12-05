@@ -29,21 +29,36 @@ public static boolean isTcpAvailable(int port){
 		}
 	}
 
-	
-	 
 	  /* now listen for connections */
 	  while (true) {
 		  
 		Socket client = sock.accept();
-		PrintWriter pout = new
-		  PrintWriter(client.getOutputStream(), true);
+
+		// Get input from client 
+		DataInputStream client_message_stream = new DataInputStream(
+			new BufferedInputStream(client.getInputStream()));
+
+		String client_message = "";
+		while(!client_message.equals("die") || !client_message.equals("bye") ){
+			try{
+				client_message = client_message_stream.readUTF();
+				System.out.println("Message from Client: "+client_message);
+			}
+			 catch(IOException i){
+          		System.out.println(i);
+        	}
+		}
+
+		//PrintWriter pout = new
+		 // PrintWriter(client.getOutputStream(), true);
 
 		/* write the Date to the socket */
-		pout.println(new java.util.Date().toString());
+		//pout.println(new java.util.Date().toString());
 		/* close the socket and resume */
 		/* listening for connections */
 		client.close();
-		 SysLib.exit();
+		client_message_stream.close();
+		SysLib.exit();
 	  }
 	 
 	}
