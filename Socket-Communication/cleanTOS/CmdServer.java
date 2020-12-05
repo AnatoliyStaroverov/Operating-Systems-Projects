@@ -1,9 +1,14 @@
 import java.net.*;
 import java.io.*;
+import java.util.*;
+import java.lang.*;
 
 public class CmdServer extends Thread{
 
-//private ServerSocket sock = null;
+ServerSocket sock;
+Socket client;
+PrintWriter out;
+BufferedReader in;
 
 // Function to see if port is avaliable.
 public static boolean isTcpAvailable(int port){
@@ -17,11 +22,18 @@ public static boolean isTcpAvailable(int port){
 	}
 	return portAvalability;
 }
-
-  public void run() {
-	try {
-	ServerSocket sock  = null;
-	for(int i = 0; i<=500;i++){
+// Function to return reverse message from client 
+String ReverseMessage(String message){
+	StringBuilder input = new StringBuilder();
+	input.append(message);
+	input = input.reverse();
+	String ReverseStringMessage = input.toString();
+	return ReverseStringMessage;
+}
+// Set up server port
+void setUpServer(){
+	try{
+		for(int i = 0; i<=500;i++){
 		if(isTcpAvailable(5000+i) == true){
 			  sock = new ServerSocket(5000+i);
 	 		 SysLib.cout(sock.getLocalSocketAddress()+" Listening on port: "+ sock.getLocalPort()+"\n");
@@ -29,38 +41,51 @@ public static boolean isTcpAvailable(int port){
 		}
 	}
 
-	  /* now listen for connections */
-	  while (true) {
-		  
-		Socket client = sock.accept();
+	}catch(IOException e){
+		SysLib.cout("Error in Server setup: " + e);
+	}
+}
+// Connect client server and init streams.
+void connectToClientServer(){
+	try{
+		client = sock.accept();
+		out = new PrintWriter(client.getOutputStream(),true);
+        in = new BufferedReader(
+			 new InputStreamReader(client.getInputStream()));
 
-		// Get input from client 
-		DataInputStream client_message_stream = new DataInputStream(
-			new BufferedInputStream(client.getInputStream()));
+	} catch(IOException e){
+		SysLib.cout("Error in Server setup: " + e);
+	}
+}
+// Display message from Client
+void DisplayClientMessage(){
+	try{
+	  //String message = in.readLine();
+	  //out.println(message);
+	  //SysLib.cout(message);
+	  String line;
+      while ( (line = in.readLine()) != null)
+        SysLib.cout("(Server) " + line + "\n");
+      
 
-		String client_message = "";
-		while(!client_message.equals("die") || !client_message.equals("bye") ){
-			try{
-				client_message = client_message_stream.readUTF();
-				System.out.println("Message from Client: "+client_message);
-			}
-			 catch(IOException i){
-          		System.out.println(i);
-        	}
-		}
+	}catch(IOException e){
+		SysLib.cout("Error in Server setup: " + e);
+	}
 
-		//PrintWriter pout = new
-		 // PrintWriter(client.getOutputStream(), true);
+}
 
-		/* write the Date to the socket */
-		//pout.println(new java.util.Date().toString());
-		/* close the socket and resume */
-		/* listening for connections */
+
+  public void run() {
+	try {
+	
+		setUpServer();
+
+		connectToClientServer();
+
+		DisplayClientMessage();
+
 		client.close();
-		client_message_stream.close();
 		SysLib.exit();
-	  }
-	 
 	}
 	catch (IOException ioe) {
 		System.err.println(ioe);

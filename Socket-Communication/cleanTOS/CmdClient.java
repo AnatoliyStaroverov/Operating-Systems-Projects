@@ -10,9 +10,14 @@ public class CmdClient extends Thread
   private String hostName;
   private int port;
 
-  DataInputStream input_message = null;
-  DataOutputStream output_mesage = null;
+  //DataInputStream input_message = null;
+  //DataInputStream server_message = null;
+  //DataOutputStream output_mesage = null;
   Socket sock = null;
+  BufferedReader in;
+  BufferedReader stdIn;
+  PrintWriter out;
+
 
 
   // Validation function to enforce Tcp ports from 5000-5500.
@@ -25,6 +30,29 @@ public class CmdClient extends Thread
     }
   }
 
+  // Function to Set up Client server port.
+  private void setUpClientServer(){
+    try{
+       /* make connection to server socket */
+       sock = new Socket(hostName,port);
+       SysLib.cout("Client Connected on : " + hostName +"\n");
+       SysLib.cout(" (Client) Enter Message: ");
+       stdIn = new BufferedReader(new InputStreamReader(System.in));
+       out = new PrintWriter(sock.getOutputStream(),true);
+       in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+       
+       String fromClient;
+       do{
+         fromClient = stdIn.readLine();
+         out.println(fromClient);
+
+       }
+       while(!fromClient.equals("bye"));
+
+    }catch(IOException e){
+      SysLib.cout("Error in Port Set up: "+ e);
+    }
+  }
   /**
     Constructor to set user inputed port 
     and hostname.If hostname isnt provided 
@@ -54,47 +82,38 @@ public class CmdClient extends Thread
   }
   
   public void run() {
-    try {
+    try{
+     // Set up Client Server with port and hostname.
+      setUpClientServer();
+     
+     
+       
+
       
-      /* make connection to server socket */
-     sock = new Socket(hostName,port);
-      SysLib.cout("Client Connected on : " + hostName +"\n");
 
-       input_message = new DataInputStream(System.in);
-       output_mesage = new DataOutputStream(sock.getOutputStream());
-
-     }
-     // Execption for unknow host. 
-       catch(UnknownHostException u){
-      System.err.println(u);
-      }
-       catch(IOException e){
-       System.err.println(e);
-       }
-
-
-      String user_input = "";
-      while(!user_input.equals("bye") || !user_input.equals("die") ){
-        try{
-          user_input = input_message.readLine();
-          output_mesage.writeUTF(user_input);
-         }
-        catch(IOException i){
-          System.out.println(i);
-         }
-       }
-
-      try{
-       /* close the socket connection*/
-       input_message.close();
-       output_mesage.close();
-       sock.close();
-       SysLib.exit( );
-       }
-      catch(IOException e){
-       //System.err.println(e);
-       }
+      // Check for stdin or message from server. 
+      String fromServer;
     
+      
+        try{
+          if((fromServer = in.readLine()) != null ){
+           SysLib.cout("Client: (from server) "+fromServer + "\n");
+           }
+            // User input option.
+            
+        }
+        catch(IOException e){
+          System.out.println("message execption: " + e);
+        }
+
+     sock.close();
+     SysLib.exit( );
+      
+    } catch(IOException e){
+        System.out.println("message execption: " + e);
+    }
+      
+     
   }
 
   // Start CmdClient here 
